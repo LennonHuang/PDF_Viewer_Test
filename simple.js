@@ -1,13 +1,14 @@
 // If absolute URL from the remote server is provided, configure the CORS
 // header on that server.
-var url = 'https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/web/compressed.tracemonkey-pldi-09.pdf';
+const proxyURL = 'https://cors-anywhere.herokuapp.com/';
+var url = 'https://github.com/LennonHuang/PDF_Viewer_Test/raw/master/pdf/test.pdf';
 
 // Loaded via <script> tag, create shortcut to access PDF.js exports.
 var pdfjsLib = window['pdfjs-dist/build/pdf'];
 
 // The workerSrc property shall be specified.
 pdfjsLib.GlobalWorkerOptions.workerSrc = '//mozilla.github.io/pdf.js/build/pdf.worker.js';
-
+              
 var pdfDoc = null,
     pageNum = 1,
     pageRendering = false,
@@ -89,10 +90,32 @@ document.getElementById('next').addEventListener('click', onNextPage);
 /**
  * Asynchronously downloads PDF.
  */
-pdfjsLib.getDocument(url).promise.then(function(pdfDoc_) {
+pdfjsLib.getDocument(proxyURL + url).promise.then(function(pdfDoc_) {
   pdfDoc = pdfDoc_;
   document.getElementById('page_count').textContent = pdfDoc.numPages;
 
   // Initial/first page rendering
   renderPage(pageNum);
 });
+
+//Update PDF Render with User File
+document.getElementById("filepath").onchange = function(event){
+  var file = event.target.files[0];
+  console.log(file);
+  var fileReader = new FileReader();
+  console.log(fileReader);
+  fileReader.readAsArrayBuffer(file);
+
+  fileReader.onload = function(){
+    console.log("hehehehe");
+    var typedarray = new Uint8Array(this.result);
+    console.log(typedarray);
+    pdfjsLib.getDocument(typedarray).promise.then(function(pdfDoc_) {
+      pdfDoc = pdfDoc_;
+      document.getElementById('page_count').textContent = pdfDoc.numPages;
+    
+      // Initial/first page rendering
+      renderPage(pageNum);
+    });
+  }
+};

@@ -1,4 +1,8 @@
+body{
+  min-height: 100vh;
+}
 #the-canvas {
+  display: flex;
   border: 10px solid black;
   direction: ltr;
 }
